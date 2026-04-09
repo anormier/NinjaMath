@@ -71,7 +71,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
           variant="cyan"
           size="xl"
           pulsing
-          onClick={() => onNavigate('mode_select')}
+          onClick={() => onNavigate(activeProfile ? 'mode_select' : 'profile')}
           className="font-bungee text-2xl tracking-wider px-16"
         >
           JOUER
