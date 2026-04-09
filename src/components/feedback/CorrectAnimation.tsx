@@ -33,7 +33,7 @@ export const CorrectAnimation: React.FC<CorrectAnimationProps> = ({
     if (show) {
       const timer = setTimeout(() => {
         onComplete?.();
-      }, 800);
+      }, 400);
       return () => clearTimeout(timer);
     }
   }, [show, onComplete]);

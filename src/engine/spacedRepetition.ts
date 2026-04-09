@@ -34,68 +34,42 @@ export function selectNextQuestion(
 ): QuestionState | null {
   if (facts.length === 0) return null;
 
-  // Helper: exclude the fact that was just asked (no immediate repeats)
   const notLastAsked = (f: QuestionState) =>
     !lastAsked || f.a !== lastAsked.a || f.b !== lastAsked.b;
 
-  // Priority 1: Session errors — re-ask wrong answers, but not the one just asked
+  // Priority 1: Session errors — re-ask wrong answers (not the one just asked)
   if (sessionErrors.length > 0) {
     const errorFact = sessionErrors
       .map((e) => facts.find((f) => f.a === e.a && f.b === e.b))
       .filter((f): f is QuestionState => f !== undefined)
       .find(notLastAsked);
     if (errorFact) return errorFact;
-    // If only error IS the lastAsked, still return it (must re-ask)
     const anyError = sessionErrors
       .map((e) => facts.find((f) => f.a === e.a && f.b === e.b))
       .find((f): f is QuestionState => f !== undefined);
     if (anyError) return anyError;
   }
 
-  // Gather pools
-  const learningFacts = facts.filter((f) => f.bucket === 'learning' && notLastAsked(f));
+  // Priority 2: Always introduce a NEW (never-seen) fact first.
+  // This ensures every fact is seen once before any repeats.
   const newFacts = facts.filter((f) => f.bucket === 'new');
-  const reviewFacts = facts.filter((f) => f.bucket === 'review' && notLastAsked(f));
-
-  // Priority 2: Interleave learning and new facts for progressive discovery
-  // Introduce a new fact when:
-  //   - there are fewer than 3 active learning facts (keep variety)
-  //   - OR we just got the current learning facts right and need something fresh
-  // Always introduce new facts progressively (no hard cap per session for single tables)
-  const activeLearningCount = facts.filter((f) => f.bucket === 'learning').length;
-
-  if (newFacts.length > 0 && activeLearningCount < 3) {
-    // Introduce the next new fact in order
-    return newFacts[0];
-  }
-
-  // Priority 3: Pick from learning facts — least recently seen first
-  if (learningFacts.length > 0) {
-    const sorted = [...learningFacts].sort((a, b) => a.lastSeen - b.lastSeen);
-    return sorted[0];
-  }
-
-  // Priority 4: If we have new facts remaining and no learning facts to rotate, introduce one
   if (newFacts.length > 0) {
     return newFacts[0];
   }
 
-  // Priority 5: Review facts
-  if (reviewFacts.length > 0) {
-    const sorted = [...reviewFacts].sort((a, b) => a.lastSeen - b.lastSeen);
-    return sorted[0];
+  // Priority 3: All facts have been seen at least once.
+  // Pick the LEAST recently seen fact (round-robin), skipping lastAsked.
+  const candidates = facts.filter((f) => f.bucket !== 'mastered' && notLastAsked(f));
+  if (candidates.length > 0) {
+    return [...candidates].sort((a, b) => a.lastSeen - b.lastSeen)[0];
   }
 
-  // Fallback: pick any non-mastered fact (not lastAsked), or oldest mastered
-  const nonMastered = facts.filter((f) => f.bucket !== 'mastered' && notLastAsked(f));
-  if (nonMastered.length > 0) {
-    return [...nonMastered].sort((a, b) => a.lastSeen - b.lastSeen)[0];
+  // Priority 4: Review / mastered — least recently seen
+  const allNonLast = facts.filter(notLastAsked);
+  if (allNonLast.length > 0) {
+    return [...allNonLast].sort((a, b) => a.lastSeen - b.lastSeen)[0];
   }
 
-  const allSorted = [...facts].filter(notLastAsked).sort((a, b) => a.lastSeen - b.lastSeen);
-  if (allSorted.length > 0) return allSorted[0];
-
-  // Absolute fallback (only 1 fact exists)
   return facts[0];
 }
 

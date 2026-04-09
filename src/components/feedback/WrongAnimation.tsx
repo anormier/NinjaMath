@@ -32,7 +32,7 @@ export const WrongAnimation: React.FC<WrongAnimationProps> = ({
     if (show) {
       const timer = setTimeout(() => {
         onComplete?.();
-      }, 1500);
+      }, 900);
       return () => clearTimeout(timer);
     }
   }, [show, onComplete]);

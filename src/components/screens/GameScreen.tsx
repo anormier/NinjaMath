@@ -19,7 +19,7 @@ interface GameScreenProps {
   isChrono: boolean;
 }
 
-const FEEDBACK_DURATION = 1200;
+const FEEDBACK_DURATION = 600;
 
 export const GameScreen: React.FC<GameScreenProps> = ({
   onNavigate,
