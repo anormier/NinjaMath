@@ -179,6 +179,44 @@ export const playTick = (): void => {
   playTone(1000, 30, 'sine', 0.15);
 };
 
+// --------------- robot voice ---------------
+
+const VICTORY_PHRASES = [
+  'Tu as gagné, super grougou !',
+  'Bravo champion, tu es un génie du calcul !',
+  'Incroyable, tu as tout déchiré !',
+  'Waouh, tu es trop fort !',
+  'Victoire totale, le roi du calcul !',
+  'Magnifique, ton cerveau est en feu !',
+  'Tu es un ninja des maths !',
+  'Félicitations, mission accomplie !',
+  'Extraordinaire, rien ne t\'arrête !',
+  'Boum, tu as explosé le score !',
+];
+
+/** Speak a random victory phrase with a robot voice */
+export const speakVictory = (): void => {
+  if (!soundEnabled) return;
+  if (typeof speechSynthesis === 'undefined') return;
+
+  // Cancel any ongoing speech
+  speechSynthesis.cancel();
+
+  const phrase = VICTORY_PHRASES[Math.floor(Math.random() * VICTORY_PHRASES.length)];
+  const utterance = new SpeechSynthesisUtterance(phrase);
+  utterance.lang = 'fr-FR';
+  utterance.rate = 1.1;
+  utterance.pitch = 0.6;
+  utterance.volume = 1;
+
+  // Try to pick a French voice
+  const voices = speechSynthesis.getVoices();
+  const frVoice = voices.find((v) => v.lang.startsWith('fr'));
+  if (frVoice) utterance.voice = frVoice;
+
+  speechSynthesis.speak(utterance);
+};
+
 /** Enable or disable all sounds */
 export const setSoundEnabled = (enabled: boolean): void => {
   soundEnabled = enabled;

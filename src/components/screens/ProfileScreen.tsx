@@ -63,6 +63,34 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
         </h1>
       </div>
 
+      {/* Guest / unlogged button */}
+      <motion.button
+        onClick={() => {
+          setActiveProfile('default-player');
+          onNavigate('home');
+        }}
+        className={`flex items-center gap-4 px-5 py-4 rounded-2xl backdrop-blur-md
+          border-2 cursor-pointer select-none transition-colors
+          ${activeProfileId === 'default-player' ? 'bg-white/10' : 'bg-white/5 hover:bg-white/10'}`}
+        style={{
+          borderColor: activeProfileId === 'default-player' ? '#FF00E5' : 'rgba(255,255,255,0.15)',
+          boxShadow: activeProfileId === 'default-player'
+            ? '0 0 20px rgba(255, 0, 229, 0.3)'
+            : 'none',
+        }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <span className="text-3xl">👻</span>
+        <div className="flex flex-col items-start">
+          <span className="font-quicksand text-white font-semibold text-lg">Jouer sans compte</span>
+          <span className="text-xs font-quicksand text-white/50">Toutes les tables débloquées</span>
+        </div>
+        {activeProfileId === 'default-player' && (
+          <span className="ml-auto text-fuchsia-400 font-fredoka text-sm font-bold">✓ Actif</span>
+        )}
+      </motion.button>
+
       {/* Profile list */}
       <motion.div
         className="flex flex-col gap-3"
@@ -70,7 +98,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
         initial="initial"
         animate="animate"
       >
-        {profiles.map((profile) => {
+        {profiles.filter((p) => p.id !== 'default-player').map((profile) => {
           const isActive = profile.id === activeProfileId;
           return (
             <motion.button
@@ -124,7 +152,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
       </motion.div>
 
       {/* Add profile button */}
-      {!isCreating && profiles.length < 4 && (
+      {!isCreating && profiles.filter((p) => p.id !== 'default-player').length < 4 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -141,7 +169,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
         </motion.div>
       )}
 
-      {profiles.length >= 4 && !isCreating && (
+      {profiles.filter((p) => p.id !== 'default-player').length >= 4 && !isCreating && (
         <p className="font-quicksand text-white/50 text-center text-sm">
           Maximum 4 profils atteint
         </p>

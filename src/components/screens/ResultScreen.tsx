@@ -5,6 +5,7 @@ import { screenTransition, staggerContainer, staggerItem } from '../../hooks/use
 import { useGameStore } from '../../stores/gameStore';
 import { Button } from '../ui/Button';
 import { ParticleEffect } from '../ui/ParticleEffect';
+import { speakVictory } from '../../utils/sounds';
 
 interface ResultScreenProps {
   onNavigate: (screen: Screen) => void;
@@ -55,6 +56,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({ onNavigate }) => {
       if (progress >= 1) {
         clearInterval(interval);
         setShowParticles(true);
+        speakVictory();
       }
     }, 16);
 

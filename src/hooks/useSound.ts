@@ -10,6 +10,7 @@ import {
   playBeatDad,
   playLevelUp,
   playTick,
+  speakVictory,
 } from '../utils/sounds';
 
 interface UseSoundReturn {
@@ -20,6 +21,7 @@ interface UseSoundReturn {
   playBeatDadSound: () => void;
   playLevelUpSound: () => void;
   playTickSound: () => void;
+  playVictoryVoice: () => void;
 }
 
 export function useSound(): UseSoundReturn {
@@ -68,6 +70,11 @@ export function useSound(): UseSoundReturn {
     playTick();
   }, [soundEnabled]);
 
+  const playVictoryVoice = useCallback(() => {
+    if (!soundEnabled) return;
+    speakVictory();
+  }, [soundEnabled]);
+
   return {
     playCorrect,
     playError,
@@ -76,5 +83,6 @@ export function useSound(): UseSoundReturn {
     playBeatDadSound,
     playLevelUpSound,
     playTickSound,
+    playVictoryVoice,
   };
 }
