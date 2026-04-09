@@ -37,7 +37,16 @@ export const TableSelectScreen: React.FC<TableSelectScreenProps> = ({
     return profiles.find((p) => p.role === oppositeRole) ?? null;
   }, [activeProfile, profiles]);
 
-  const unlockedTables = useMemo(() => getUnlockedTables(allStats), [allStats]);
+  const isDefaultProfile = profileId === 'default-player';
+  const unlockedTables = useMemo(() => {
+    if (isDefaultProfile) {
+      // Guest mode: all tables accessible
+      const all: number[] = [];
+      for (let t = TABLES_RANGE.min; t <= TABLES_RANGE.max; t++) all.push(t);
+      return all;
+    }
+    return getUnlockedTables(allStats);
+  }, [allStats, isDefaultProfile]);
 
   const [chronoPromptTable, setChronoPromptTable] = useState<number | null>(null);
 
