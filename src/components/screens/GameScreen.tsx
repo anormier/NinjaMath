@@ -46,13 +46,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   const [feedbackKey, setFeedbackKey] = useState(0);
   const hasStartedRef = useRef(false);
 
-  // Redirect to profile if no active user
-  useEffect(() => {
-    if (!activeProfile) {
-      onNavigate('profile');
-    }
-  }, [activeProfile, onNavigate]);
-
   // Start game on mount
   useEffect(() => {
     if (hasStartedRef.current) return;

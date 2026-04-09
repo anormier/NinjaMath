@@ -49,11 +49,16 @@ export function getNextQuestion(
     return null;
   }
 
+  // Determine the last asked fact to avoid immediate repeats
+  const lastAnswer = session.answers.length > 0
+    ? session.answers[session.answers.length - 1]
+    : null;
+  const lastAsked = lastAnswer ? { a: lastAnswer.a, b: lastAnswer.b } : null;
+
   if (session.isChrono) {
     // Chrono mode: 10 questions, then re-ask errors
     if (session.questionsAsked < CHRONO_QUESTIONS) {
-      // Still asking initial questions: pick next via spaced repetition
-      const fact = selectNextQuestion(facts, [], session.newFactsIntroduced);
+      const fact = selectNextQuestion(facts, [], session.newFactsIntroduced, lastAsked);
       if (!fact) return null;
       return generateQuestion(fact, session.lastStyle);
     }
@@ -74,7 +79,8 @@ export function getNextQuestion(
   const fact = selectNextQuestion(
     facts,
     session.sessionErrors,
-    session.newFactsIntroduced
+    session.newFactsIntroduced,
+    lastAsked
   );
   if (!fact) return null;
 

@@ -20,12 +20,20 @@ interface UserActions {
 
 export type UserStore = UserState & UserActions;
 
+const DEFAULT_PROFILE: UserProfile = {
+  id: 'default-player',
+  name: 'Joueur',
+  avatar: '🚀',
+  role: 'child',
+  createdAt: 0,
+};
+
 export const useUserStore = create<UserStore>()(
   persist(
     (set, get) => ({
       // ---------- state ----------
-      profiles: [],
-      activeProfileId: null,
+      profiles: [DEFAULT_PROFILE],
+      activeProfileId: DEFAULT_PROFILE.id,
 
       // ---------- actions ----------
 
