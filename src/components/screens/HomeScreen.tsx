@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import type { Screen } from '../../types';
 import { screenTransition } from '../../hooks/useAnimation';
-import { useUserStore } from '../../stores/userStore';
+import { useUserStore, DEFAULT_PROFILE_ID } from '../../stores/userStore';
 import { Button } from '../ui/Button';
 
 interface HomeScreenProps {
@@ -11,6 +11,7 @@ interface HomeScreenProps {
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
   const activeProfile = useUserStore((s) => s.getActiveProfile());
+  const isGuest = useUserStore((s) => s.isGuest());
 
   return (
     <motion.div
@@ -78,14 +79,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
         </Button>
       </motion.div>
 
-      {/* Active profile display */}
+      {/* Profile display */}
       <motion.div
         className="flex flex-col items-center gap-3 mt-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
       >
-        {activeProfile ? (
+        {isGuest ? (
+          <div className="flex flex-col items-center gap-2">
+            <span className="font-quicksand text-white/50 text-sm">Mode invité — toutes les tables ouvertes</span>
+            <Button
+              variant="magenta"
+              size="md"
+              onClick={() => onNavigate('profile')}
+            >
+              👤 Créer un profil
+            </Button>
+          </div>
+        ) : (
           <motion.button
             onClick={() => onNavigate('profile')}
             className="flex items-center gap-3 px-5 py-3 rounded-2xl backdrop-blur-md
@@ -101,14 +113,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
               {activeProfile.name}
             </span>
           </motion.button>
-        ) : (
-          <Button
-            variant="ghost"
-            size="md"
-            onClick={() => onNavigate('profile')}
-          >
-            Crée ton profil !
-          </Button>
         )}
       </motion.div>
 

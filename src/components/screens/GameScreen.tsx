@@ -49,7 +49,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   // Start game on mount
   useEffect(() => {
     if (hasStartedRef.current) return;
-    if (!activeProfile) return;
 
     hasStartedRef.current = true;
     startGame(mode, table, activeProfile.id, isChrono);
@@ -153,7 +152,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     onNavigate('result');
   }, [timer, endGame, onNavigate]);
 
-  if (!currentSession || !activeProfile) {
+  if (!currentSession) {
     return (
       <motion.div
         className="flex items-center justify-center min-h-full"

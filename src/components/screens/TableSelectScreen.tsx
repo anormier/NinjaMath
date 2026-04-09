@@ -4,7 +4,7 @@ import type { Screen } from '../../types';
 import { TABLES_RANGE } from '../../types';
 import { screenTransition, staggerContainer, staggerItem } from '../../hooks/useAnimation';
 import { useStatsStore } from '../../stores/statsStore';
-import { useUserStore } from '../../stores/userStore';
+import { useUserStore, DEFAULT_PROFILE_ID } from '../../stores/userStore';
 import {
   getUnlockedTables,
   isTableReadyForChrono,
@@ -37,7 +37,7 @@ export const TableSelectScreen: React.FC<TableSelectScreenProps> = ({
     return profiles.find((p) => p.role === oppositeRole) ?? null;
   }, [activeProfile, profiles]);
 
-  const isDefaultProfile = profileId === 'default-player';
+  const isDefaultProfile = profileId === DEFAULT_PROFILE_ID;
   const unlockedTables = useMemo(() => {
     if (isDefaultProfile) {
       // Guest mode: all tables accessible
